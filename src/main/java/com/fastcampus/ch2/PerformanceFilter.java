@@ -34,7 +34,6 @@ public class PerformanceFilter implements Filter {
 		System.out.println(" 소요시간="+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
-	@Override
 	public void destroy() {
 		// 정리 작업
 	}
