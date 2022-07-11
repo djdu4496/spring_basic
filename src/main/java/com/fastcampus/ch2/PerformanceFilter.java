@@ -14,12 +14,10 @@ import javax.servlet.http.HttpServletRequest;
 // 필터를 적용할 요청의 패턴 지정 - 모든 요청에 필터를 적용.
 @WebFilter(urlPatterns="/*")
 public class PerformanceFilter implements Filter {
-	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
 		// 초기화 작업
 	}
 
-	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
 			throws IOException, ServletException {
 		// 1. 전처리 작업
@@ -29,7 +27,10 @@ public class PerformanceFilter implements Filter {
 		chain.doFilter(request, response); 
 		
 		// 3. 후처리 작업
-		System.out.print("["+((HttpServletRequest)request).getRequestURI()+"]");
+		HttpServletRequest req = (HttpServletRequest)request;
+		String referer = req.getHeader("referer");
+		String method = req.getMethod();
+		System.out.print("["+referer+"] -> "+ method+ "["+req.getRequestURI()+"]");
 		System.out.println(" 소요시간="+(System.currentTimeMillis()-startTime)+"ms");
 	}
 
