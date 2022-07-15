@@ -3,11 +3,14 @@ package com.fastcampus.ch2;
 import java.util.Arrays;
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 public class User {
 	private String id;
 	private String pwd;
 	private String name;
 	private String email;
+	@DateTimeFormat(pattern="yyyy-MM-dd")
 	private Date birth;
 	private String[] hobby;
 	private String[] sns;

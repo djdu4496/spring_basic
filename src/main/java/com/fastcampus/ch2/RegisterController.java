@@ -1,13 +1,15 @@
 package com.fastcampus.ch2;
 
-import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.List;
 
-import org.springframework.beans.propertyeditors.CustomDateEditor;
+import javax.validation.Valid;
+
+import org.springframework.beans.propertyeditors.StringArrayPropertyEditor;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,28 +21,43 @@ public class RegisterController {
 	
 	@InitBinder
 	public void toDate(WebDataBinder binder) {
-		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-		binder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));
+		ConversionService conversionService = binder.getConversionService();
+//		System.out.println("conversionService="+conversionService);
+//		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//		binder.registerCustomEditor(Date.class, new CustomDateEditor(df, false));
+//		binder.registerCustomEditor(String[].class, new StringArrayPropertyEditor("#"));
+//		binder.addValidators(new UserValidator()); // UserValitorï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, WebDataBinderï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ validatorï¿½ï¿½ ï¿½ï¿½ï¿½
+		List<Validator> validatorList = binder.getValidators();
+		System.out.println("validatorList="+validatorList);
 	}
 	
 	@RequestMapping(value="/register/add", method={RequestMethod.GET, RequestMethod.POST})
-	public String register() { // ½Å±ÔÈ¸¿ø °¡ÀÔ È­¸é
+	public String register() { // ï¿½Å±ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ È­ï¿½ï¿½
 		return "registerForm"; // WEB-INF/views/registerForm.jsp
 	}
 //	@RequestMapping(value="/register/save", method=RequestMethod.POST)
-	@PostMapping("/register/save") // 4.3ºÎÅÍ
-	public String save(User user, BindingResult result, Model model) throws Exception {
+	@PostMapping("/add") // 4.3ï¿½ï¿½ï¿½ï¿½
+	public String save(@Valid User user, BindingResult result, Model model) throws Exception {
 		System.out.println("result="+result);
 		System.out.println("user="+user);
-		// 1. À¯È¿¼º °Ë»ç
-		if(!isValid(user)) {
-			String msg = URLEncoder.encode("id¸¦ Àß¸ø ÀÔ·ÂÇÏ¼Ì½À´Ï´Ù.", "utf-8");
-			
-//			return "redirect:/register/add?msg="+msg; // URLÀçÀÛ¼º(rewriting)
-			model.addAttribute("msg", msg);
-			return "forward:/register/add";
+		
+		UserValidator userValidator = new UserValidator();
+		userValidator.validate(user, result); // BindingResultï¿½ï¿½ Errorsï¿½ï¿½ ï¿½Ú¼ï¿½
+		
+		// userï¿½ï¿½Ã¼ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½, registerFormï¿½ï¿½ ï¿½Ì¿ï¿½ï¿½Ø¼ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
+		if(result.hasErrors()) {
+			return "registerForm";
 		}
-		// 2. DB¿¡ ½Å±ÔÈ¸¿ø Á¤º¸¸¦ ÀúÀå
+		
+//		// 1. ï¿½ï¿½È¿ï¿½ï¿½ ï¿½Ë»ï¿½
+//		if(!isValid(user)) {
+//			String msg = URLEncoder.encode("idï¿½ï¿½ ï¿½ß¸ï¿½ ï¿½Ô·ï¿½ï¿½Ï¼Ì½ï¿½ï¿½Ï´ï¿½.", "utf-8");
+//			
+////			return "redirect:/register/add?msg="+msg; // URLï¿½ï¿½ï¿½Û¼ï¿½(rewriting)
+//			model.addAttribute("msg", msg);
+//			return "forward:/register/add";
+//		}
+		// 2. DBï¿½ï¿½ ï¿½Å±ï¿½È¸ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		return "registerInfo";
 	}
 
