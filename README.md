@@ -1,5 +1,5 @@
 # spring_basic
 
-## ch2
+## ch2 MVC
 
 ## ch3
